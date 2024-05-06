@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Document Form</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Document Form</h1>
+        <!-- Sửa tại đây: thêm id="uploadForm" vào thẻ <form> -->
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="author">Tác giả:</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+
+            <div class="form-group">
+                <label for="department">Thư mục:</label>
+                <input type="text" id="department" name="department">
+            </div>
+
+            <div class="form-group">
+                <label for="documentName">Tên tài liệu:</label>
+                <input type="text" id="documentName" name="documentName" required>
+            </div>
+
+            <div class="form-group" hidden=""true>
+                <label for="documentDate">Ngày tạo:</label>
+                <input type="date" id="documentDate" name="documentDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="file">Chọn file để upload:</label>
+                <input type="file" id="file" name="file" required>
+            </div>
+
+            <input type="submit" value="Submit" class="form-button">
+        </form>
+    </div>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 80%;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="date"], select, input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Ngăn không cho form gửi thông tin lên server truyền thống
+            let data={};
+            data.author = document.getElementById('author').value;
+            data.department = document.getElementById('department').value;
+            data.documentName = document.getElementById('documentName').value;
+            data.documentDate = document.getElementById('documentDate').value;
+            data.file = document.getElementById('file').files[0]; // Lấy file được chọn
+            uploadFile(data)
+            console.log({
+                Author: data.author,
+                Department: data.department,
+                DocumentName: data.documentName,
+                DocumentDate: data.documentDate,
+                FileName: data.file ? file.name : 'No file selected'
+            });
+        });
+        function uploadFile(data) {
+            data.folder ='/Photos'
+            const filePath = data.department + '/' + data.documentName; // Bạn có thể thay đổi đường dẫn theo yêu cầu
+            file = data.file
+            const formData = new FormData();
+            formData.append('file', file);
+        
+            fetch(`http://localhost:3000/directory-contents/upload?filePath=${encodeURIComponent(filePath)}`, {
+            method: 'PUT',
+            body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+            console.log(data);
+            alert(data.message); // Hiển thị thông báo thành công
+            })
+            .catch(error => {
+            console.error('Error uploading file:', error);
+            alert('Error uploading file'); // Hiển thị thông báo lỗi
+            });
+        }
+    </script>
+</body>
+</html>
